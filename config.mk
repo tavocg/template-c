@@ -5,7 +5,10 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 DESTDIR ?=
 
-CC = gcc
+CC = cc
+
+LDFLAGS += \
+					 -static
 
 CFLAGS += \
 					-std=c99 \

@@ -25,7 +25,7 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)
-	./$(BIN)
+	@./$(BIN)
 
 install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"

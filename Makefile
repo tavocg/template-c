@@ -18,11 +18,13 @@ build: all
 
 $(BIN): $(OBJ) Makefile config.mk
 	@mkdir -p "$(@D)"
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+	@echo "$@"
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	@mkdir -p "$(@D)"
-	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
+	@echo "$@"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)
 	@./$(BIN)

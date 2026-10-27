@@ -5,7 +5,7 @@ BUILD_DIR = build
 MAN_DIR = man
 
 BIN = $(BUILD_DIR)/$(PROGRAM)
-SRC = $(wildcard $(SRC_DIR)/*.c)
+SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 MANPAGES = $(wildcard $(MAN_DIR)/man*/*)
@@ -44,7 +44,7 @@ uninstall:
 	done
 
 clean:
-	rm -f $(BIN) $(BUILD_DIR)/*.o $(BUILD_DIR)/*.d
+	rm -f $(BIN) $(OBJ) $(DEP)
 
 -include $(DEP)
 

@@ -1,4 +1,4 @@
-PROGRAM = program
+PROGRAM = foobar
 
 SRC_DIR = src
 BUILD_DIR = build

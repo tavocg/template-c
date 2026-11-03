@@ -1,4 +1,4 @@
-/build/
+/target/
 *.o
 *.d
 /compile_commands.json

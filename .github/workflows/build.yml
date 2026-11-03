@@ -120,31 +120,12 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v31
-        with:
-          extra_nix_config: |
-            experimental-features = nix-command flakes
-
       - name: Download release executables
         uses: actions/download-artifact@v8
         with:
           pattern: release-*
           path: dist
           merge-multiple: true
-
-      # UPX currently disables packing executables for modern macOS.
-      - name: Compress release executables
-        run: |
-          nix develop -c sh -eu <<'PACK'
-          for asset in dist/*; do
-            case "$asset" in
-              *-apple-darwin) continue ;;
-              *-linux-*) chmod +x "$asset" ;;
-            esac
-            upx --best "$asset"
-          done
-          PACK
 
       - name: Publish release
         env:

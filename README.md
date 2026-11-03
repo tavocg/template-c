@@ -9,37 +9,33 @@ Download prebuilt binaries for Linux, macOS, and Windows from the
 
 ## Build
 
+Edit `config.mk` to match your setup.
+
 Requirements:
-- Zig v0.17.0
+
+- GNU Make.
+- GCC/Clang-compatible C89 compiler.
 
 ```sh
-zig build
-# -> zig-out/bin/foobar
-```
+make
+# -> target/<triple>/
 
-```sh
-zig build --release=fast -Dtarget=aarch64-linux-musl -p target/aarch64-linux-musl
-# -> target/aarch64-linux-musl/bin/foobar
-```
-
-```sh
-zig build compdb
-# -> compile_commands.json
+make TARGET=x86_64-w64-mingw32 CC=x86_64-w64-mingw32-gcc
+# -> target/x86_64-w64-mingw32/
 ```
 
 ## Install
 
-Install the executable and versioned manpage into a chosen prefix:
+Choose install location with `PREFIX`.
 
 ```sh
-zig build --release=fast --prefix "$HOME/.local"
-zig build uninstall --prefix "$HOME/.local"
+make install PREFIX="$HOME/.local"
 ```
 
-### Nix
+To uninstall, use the same prefix:
 
 ```sh
-nix profile add github:tavocg/template-c#foobar
+make uninstall PREFIX="$HOME/.local"
 ```
 
 ## License

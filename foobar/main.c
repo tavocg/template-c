@@ -18,8 +18,14 @@
 
 #include <foobar/alpha/alpha.h>
 #include <stdio.h>
+#include <string.h>
 
-int main(void) {
+int main(int argc, char **argv) {
+	if (argc > 1 && strcmp(argv[1], "--version") == 0) {
+		puts("foobar " VERSION);
+		return 0;
+	}
+
 	alpha();
 	puts("Hello, world!");
 	return 0;

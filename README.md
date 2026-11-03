@@ -24,6 +24,18 @@ make TARGET=x86_64-w64-mingw32 CC=x86_64-w64-mingw32-gcc
 # -> target/x86_64-w64-mingw32/
 ```
 
+## Version
+
+The version lives in the `VERSION` file. It is embedded in the binary and the
+man page, and `make version` prints it.
+
+```sh
+./target/<triple>/foobar --version
+make version
+```
+
+Bump `VERSION` before tagging a release; CI checks that the tag matches.
+
 ## Install
 
 Choose install location with `PREFIX`.

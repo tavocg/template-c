@@ -36,6 +36,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 run: $(BIN)
 	@./$(BIN)
 
+version:
+	@printf '%s\n' "$(VERSION)"
+
 compile_commands.json:
 	bear -- $(MAKE) -B all
 
@@ -45,7 +48,7 @@ install: all
 	set -e; for page in $(MANPAGES); do \
 		target="$(DESTDIR)$(MANPREFIX)/$${page#$(MAN_DIR)/}"; \
 		mkdir -p "$${target%/*}"; \
-		sed 's/VERSION/$(VERSION)/g' "$$page" > "$$target"; \
+		sed 's/@VERSION@/$(VERSION)/g' "$$page" > "$$target"; \
 		chmod 644 "$$target"; \
 	done
 
@@ -60,4 +63,4 @@ clean:
 
 -include $(DEP)
 
-.PHONY: all run compile_commands.json clean install uninstall
+.PHONY: all run version compile_commands.json clean install uninstall

@@ -27,6 +27,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 run: $(BIN)
 	@./$(BIN)
 
+compile_commands.json:
+	bear -- $(MAKE) -B all
+
 install: all
 	mkdir -p "$(DESTDIR)$(PREFIX)/bin"
 	install -m 755 "$(BIN)" "$(DESTDIR)$(PREFIX)/bin/$(notdir $(BIN))"
@@ -48,4 +51,4 @@ clean:
 
 -include $(DEP)
 
-.PHONY: all run clean install uninstall
+.PHONY: all run compile_commands.json clean install uninstall

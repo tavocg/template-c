@@ -9,7 +9,7 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 DESTDIR ?=
 
-CC = cc
+CC = gcc
 
 LDFLAGS ?= -static
 

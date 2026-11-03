@@ -20,12 +20,18 @@ jobs:
           - target: Linux
             runner: ubuntu-latest
             devshell: default
+            triple: x86_64-unknown-linux-gnu
+            ext: ''
           - target: macOS
             runner: macos-latest
             devshell: default
+            triple: arm64-apple-darwin
+            ext: ''
           - target: Windows
             runner: ubuntu-latest
             devshell: windows
+            triple: x86_64-w64-mingw32
+            ext: .exe
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -39,3 +45,45 @@ jobs:
       - name: Build
         run: nix develop ".#${{ matrix.devshell }}" -c make -j2
 
+      - name: Prepare release executable
+        if: github.ref_type == 'tag'
+        env:
+          BINARY: target/${{ matrix.triple }}/foobar${{ matrix.ext }}
+          ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
+        run: install -m 755 "$BINARY" "$ASSET"
+
+      - name: Upload release executable
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ matrix.triple }}
+          path: foobar-${{ matrix.triple }}${{ matrix.ext }}
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: github.ref_type == 'tag'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download release executables
+        uses: actions/download-artifact@v8
+        with:
+          pattern: release-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" dist/* --clobber
+          else
+            gh release create "$RELEASE_TAG" dist/* \
+              --verify-tag --generate-notes --title "$RELEASE_TAG"
+          fi

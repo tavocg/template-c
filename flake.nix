@@ -11,13 +11,13 @@
         "aarch64-darwin"
       ];
 
-      mkDevShell = pkgs:
+      mkBuildConfig = pkgs:
         let
           platform = pkgs.stdenv.hostPlatform;
           target = platform.config;
         in
-        pkgs.mkShell {
-          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config bear ];
+        {
+          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config ];
           buildInputs = with pkgs; [
             # Add application libraries here, for example SDL2.
           ];
@@ -27,13 +27,49 @@
           EXT = pkgs.lib.optionalString platform.isWindows ".exe";
           TARGET = target;
           BUILD_DIR = "target/${target}";
+        };
+
+      mkPackage = pkgs:
+        pkgs.stdenv.mkDerivation (finalAttrs: (mkBuildConfig pkgs) // {
+          pname = "foobar";
+          version = "0.1.0";
+          src = pkgs.lib.cleanSource ./.;
+
+          enableParallelBuilding = true;
+          makeFlags = [ "PREFIX=$(out)" "VERSION=${finalAttrs.version}" ];
+
+          meta = {
+            description = "Print a greeting";
+            homepage = "https://github.com/tavocg/template-c";
+            license = pkgs.lib.licenses.gpl3Plus;
+            mainProgram = "foobar";
+            platforms = systems;
+          };
+        });
+
+      mkDevShell = pkgs:
+        let
+          config = mkBuildConfig pkgs;
+        in
+        pkgs.mkShell (config // {
+          nativeBuildInputs = config.nativeBuildInputs ++ [ pkgs.buildPackages.bear ];
 
           shellHook = ''
             export PS1="(foobar) $PS1"
           '';
-        };
+        });
     in
     {
+      packages = nixpkgs.lib.genAttrs systems (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+          foobar = mkPackage pkgs;
+        in
+        {
+          inherit foobar;
+          default = foobar;
+        });
+
       devShells = nixpkgs.lib.genAttrs systems (system:
         let
           pkgs = import nixpkgs { inherit system; };

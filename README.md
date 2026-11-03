@@ -35,6 +35,13 @@ To uninstall, use the same prefix:
 make uninstall PREFIX="$HOME/.local"
 ```
 
+### Nix
+
+```sh
+# Installs `foobar` and its manpage, requires flakes.
+nix profile add github:tavocg/template-c#foobar
+```
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE).

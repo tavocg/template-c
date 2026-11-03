@@ -2,7 +2,7 @@ PROGRAM = foobar
 EXT ?=
 
 SRC_DIR = src
-BUILD_DIR = build
+BUILD_DIR ?= target
 MAN_DIR = man
 
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)

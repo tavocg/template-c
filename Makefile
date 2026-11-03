@@ -15,14 +15,12 @@ include config.mk
 all: $(BIN)
 
 $(BIN): $(OBJ) Makefile config.mk
-	@mkdir -p "$(@D)"
-	@printf '\033[2m%s\033[0m\n' "$@"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+	mkdir -p "$(@D)"
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
-	@mkdir -p "$(@D)"
-	@printf '\033[2m%s\033[0m\n' "$@"
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
+	mkdir -p "$(@D)"
+	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)
 	@./$(BIN)

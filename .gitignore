@@ -1,5 +1,6 @@
+/.zig-cache/
+/zig-out/
 /target/
-*.o
-*.d
+/result
 /compile_commands.json
 /.cache/clangd/

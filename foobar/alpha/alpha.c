@@ -4,10 +4,10 @@
  *
  * © 1998-2000 Terry Jones <terry@jones.com>
  *
- * See src/main.c for full copyright and license notice.
+ * See foobar/main.c for full copyright and license notice.
  */
 
-#include <alpha/alpha.h>
+#include <foobar/alpha/alpha.h>
 
 void alpha(void) {
 }

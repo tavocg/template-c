@@ -16,7 +16,7 @@
  * foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <alpha/alpha.h>
+#include <foobar/alpha/alpha.h>
 #include <stdio.h>
 
 int main(void) {

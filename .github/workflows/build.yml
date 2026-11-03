@@ -11,102 +11,56 @@ permissions:
 jobs:
   build:
     name: ${{ matrix.target }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - target: Linux x86-64
-            runner: ubuntu-latest
-            devshell: default
-            triple: x86_64-unknown-linux-gnu
-            ext: ''
-          - target: Linux ARM64
-            runner: ubuntu-24.04-arm
-            devshell: default
-            triple: aarch64-unknown-linux-gnu
-            ext: ''
-          - target: macOS ARM64
-            runner: macos-latest
-            devshell: default
-            triple: arm64-apple-darwin
-            ext: ''
-          - target: Windows x86-64
-            runner: windows-latest
-            triple: x86_64-pc-windows-msvc
-            msvc_arch: x64
-            ext: .exe
-          - target: Windows ARM64
-            runner: windows-11-arm
-            triple: aarch64-pc-windows-msvc
-            msvc_arch: arm64
-            ext: .exe
+        target:
+          - x86_64-linux-musl
+          - aarch64-linux-musl
+          - aarch64-macos
+          - x86_64-windows-gnu
+          - aarch64-windows-gnu
     steps:
-      - name: Check out source
-        uses: actions/checkout@v7
-
-      - name: Install Nix
-        if: runner.os != 'Windows'
-        uses: cachix/install-nix-action@v31
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
-      - name: Build with Nix
-        if: runner.os != 'Windows'
-        run: nix develop ".#${{ matrix.devshell }}" -c make -j2
+      - name: Cross-compile with Zig
+        run: >-
+          nix develop -c zig build
+          -Dtarget=${{ matrix.target }} --release=fast
+          --prefix target/${{ matrix.target }}
 
-      - name: Set up Microsoft SDK and runtime libraries
-        if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{ matrix.msvc_arch }}
-
-      - name: Add native LLVM tools to PATH
-        if: runner.os == 'Windows'
-        shell: pwsh
+      - name: Check formatting and native Nix package
+        if: matrix.target == 'x86_64-linux-musl'
         run: |
-          $llvm = Join-Path $env:ProgramFiles 'LLVM\bin'
-          if (!(Test-Path "$llvm\clang.exe")) {
-            throw "LLVM was not found at $llvm"
-          }
-          $llvm | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          nix develop -c zig fmt --check build.zig tools
+          nix build
 
-      - name: Set up GNU Make and shell utilities
-        if: runner.os == 'Windows'
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MSYS
-          path-type: inherit
-          update: true
-          install: make
-
-      - name: Build natively with static Microsoft CRT
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
-        env:
-          CC: clang --target=${{ matrix.triple }} -fms-runtime-lib=static
-          TARGET: ${{ matrix.triple }}
-          EXT: .exe
-          STRIP: llvm-strip
-          LDFLAGS: -fuse-ld=lld
-        run: make -j2
+      - name: Generate and check editor configuration
+        run: |
+          nix develop -c zig build compdb --release=fast -Dtarget=${{ matrix.target }}
+          nix develop -c clangd --check=foobar/main.c --log=error
 
       - name: Prepare release executable
         if: github.ref_type == 'tag'
-        shell: bash
         env:
-          BINARY: target/${{ matrix.triple }}/foobar${{ matrix.ext }}
-          ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
-        run: cp "$BINARY" "$ASSET"
+          TARGET: ${{ matrix.target }}
+        run: |
+          ext=''
+          if [[ "$TARGET" == *-windows-* ]]; then ext='.exe'; fi
+          cp "target/$TARGET/bin/foobar$ext" "foobar-$TARGET$ext"
 
       - name: Upload release executable
         if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v7
         with:
-          name: release-${{ matrix.triple }}
-          path: foobar-${{ matrix.triple }}${{ matrix.ext }}
+          name: release-${{ matrix.target }}
+          path: foobar-${{ matrix.target }}*
           if-no-files-found: error
 
   release:

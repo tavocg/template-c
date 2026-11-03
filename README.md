@@ -1,6 +1,6 @@
 # foobar
 
-Print a greeting
+Print a greeting.
 
 ## Download
 
@@ -9,36 +9,31 @@ Download prebuilt binaries for Linux, macOS, and Windows from the
 
 ## Build
 
-Edit `config.mk` to match your setup.
-
 Requirements:
-
-- GNU Make.
-- GCC/Clang-compatible C89 compiler.
+- Zig v0.17.0
 
 ```sh
-# Output in target/machine/
-make
+zig build
+# -> zig-out/bin/foobar
+```
+
+```sh
+zig build compdb
+# -> compile_commands.json
 ```
 
 ## Install
 
-Choose install location with `PREFIX`.
+Install the executable and versioned manpage into a chosen prefix:
 
 ```sh
-make install PREFIX="$HOME/.local"
-```
-
-To uninstall, use the same prefix:
-
-```sh
-make uninstall PREFIX="$HOME/.local"
+zig build --release=fast --prefix "$HOME/.local"
+zig build uninstall --prefix "$HOME/.local"
 ```
 
 ### Nix
 
 ```sh
-# Installs `foobar` and its manpage, requires flakes.
 nix profile add github:tavocg/template-c#foobar
 ```
 

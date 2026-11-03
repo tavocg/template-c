@@ -4,7 +4,7 @@
  *
  * © 1998-2000 Terry Jones <terry@jones.com>
  *
- * See src/main.c for full copyright and license notice.
+ * See foobar/main.c for full copyright and license notice.
  */
 
 #ifndef ALPHA_H

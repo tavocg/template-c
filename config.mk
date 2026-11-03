@@ -9,7 +9,10 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 DESTDIR ?=
 
+# Respect the compiler supplied by the environment.
+ifneq ($(filter default undefined,$(origin CC)),)
 CC = gcc
+endif
 
 LDFLAGS ?= -static
 

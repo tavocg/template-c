@@ -1,6 +1,6 @@
 PROGRAM = program
 
-SRC_DIR = program
+SRC_DIR = src
 BUILD_DIR = build
 MAN_DIR = man
 

@@ -17,49 +17,89 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: Linux
+          - target: Linux x86-64
             runner: ubuntu-latest
             devshell: default
             triple: x86_64-unknown-linux-gnu
             ext: ''
-          - target: macOS
+          - target: Linux ARM64
+            runner: ubuntu-24.04-arm
+            devshell: default
+            triple: aarch64-unknown-linux-gnu
+            ext: ''
+          - target: macOS ARM64
             runner: macos-latest
             devshell: default
             triple: arm64-apple-darwin
             ext: ''
-          - target: Windows
-            runner: ubuntu-latest
-            devshell: windows
-            triple: x86_64-w64-mingw32
+          - target: Windows x86-64
+            runner: windows-latest
+            triple: x86_64-pc-windows-msvc
+            msvc_arch: x64
+            ext: .exe
+          - target: Windows ARM64
+            runner: windows-11-arm
+            triple: aarch64-pc-windows-msvc
+            msvc_arch: arm64
             ext: .exe
     steps:
       - name: Check out source
         uses: actions/checkout@v7
 
       - name: Install Nix
+        if: runner.os != 'Windows'
         uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
-      - name: Build
+      - name: Build with Nix
+        if: runner.os != 'Windows'
         run: nix develop ".#${{ matrix.devshell }}" -c make -j2
+
+      - name: Set up Microsoft SDK and runtime libraries
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+
+      - name: Add native LLVM tools to PATH
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $llvm = Join-Path $env:ProgramFiles 'LLVM\bin'
+          if (!(Test-Path "$llvm\clang.exe")) {
+            throw "LLVM was not found at $llvm"
+          }
+          $llvm | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Set up GNU Make and shell utilities
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MSYS
+          path-type: inherit
+          update: true
+          install: make
+
+      - name: Build natively with static Microsoft CRT
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        env:
+          CC: clang --target=${{ matrix.triple }} -fms-runtime-lib=static
+          TARGET: ${{ matrix.triple }}
+          EXT: .exe
+          STRIP: llvm-strip
+          LDFLAGS: -fuse-ld=lld
+        run: make -j2
 
       - name: Prepare release executable
         if: github.ref_type == 'tag'
+        shell: bash
         env:
           BINARY: target/${{ matrix.triple }}/foobar${{ matrix.ext }}
           ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
         run: install -m 755 "$BINARY" "$ASSET"
-
-      # UPX currently disables packing executables for modern macOS.
-      - name: Compress release executable
-        if: github.ref_type == 'tag' && runner.os != 'macOS'
-        env:
-          ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
-        run: |
-          nix develop ".#${{ matrix.devshell }}" -c upx --best --lzma "$ASSET"
-          nix develop ".#${{ matrix.devshell }}" -c upx --test "$ASSET"
 
       - name: Upload release executable
         if: github.ref_type == 'tag'
@@ -77,12 +117,33 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
       - name: Download release executables
         uses: actions/download-artifact@v8
         with:
           pattern: release-*
           path: dist
           merge-multiple: true
+
+      # UPX currently disables packing executables for modern macOS.
+      - name: Compress release executables
+        run: |
+          nix develop -c sh -eu <<'PACK'
+          for asset in dist/*; do
+            case "$asset" in
+              *-apple-darwin) continue ;;
+            esac
+            upx --best "$asset"
+          done
+          PACK
 
       - name: Publish release
         env:

@@ -52,6 +52,15 @@ jobs:
           ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
         run: install -m 755 "$BINARY" "$ASSET"
 
+      # UPX currently disables packing executables for modern macOS.
+      - name: Compress release executable
+        if: github.ref_type == 'tag' && runner.os != 'macOS'
+        env:
+          ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
+        run: |
+          nix develop ".#${{ matrix.devshell }}" -c upx --best --lzma "$ASSET"
+          nix develop ".#${{ matrix.devshell }}" -c upx --test "$ASSET"
+
       - name: Upload release executable
         if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v7

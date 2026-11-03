@@ -17,7 +17,7 @@
           target = platform.config;
         in
         pkgs.mkShell {
-          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config bear ];
+          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config bear upx ];
           buildInputs = with pkgs; [
             # Add application libraries here, for example SDL2.
           ];

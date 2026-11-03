@@ -16,7 +16,7 @@ LDFLAGS ?= -static
 LDLIBS ?=
 
 CFLAGS += \
-					-std=c99 \
+					-std=c89 \
 					-O2 \
 					-pedantic-errors \
 					-Werror \

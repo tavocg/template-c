@@ -3,4 +3,4 @@
 
 void alpha(void);
 
-#endif // ALPHA_H
+#endif /* ALPHA_H */

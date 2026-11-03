@@ -10,18 +10,9 @@ permissions:
 
 jobs:
   build:
-    name: ${{ matrix.target }}
+    name: Build all targets
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - x86_64-linux-musl
-          - aarch64-linux-musl
-          - aarch64-macos
-          - x86_64-windows-gnu
-          - aarch64-windows-gnu
     steps:
       - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
@@ -29,38 +20,36 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
-      - name: Cross-compile with Zig
-        run: >-
-          nix develop -c zig build
-          -Dtarget=${{ matrix.target }} --release=fast
-          --prefix target/${{ matrix.target }}
-
       - name: Check formatting and native Nix package
-        if: matrix.target == 'x86_64-linux-musl'
         run: |
           nix develop -c zig fmt --check build.zig tools
           nix build
 
-      - name: Generate and check editor configuration
+      - name: Build and check all targets
         run: |
-          nix develop -c zig build compdb --release=fast -Dtarget=${{ matrix.target }}
-          nix develop -c clangd --check=foobar/main.c --log=error
+          nix develop -c bash -euo pipefail -c '
+            mkdir -p dist
+            for target in \
+              x86_64-linux-musl aarch64-linux-musl aarch64-macos \
+              x86_64-windows-gnu aarch64-windows-gnu
+            do
+              echo "::group::$target"
+              zig build --release=fast -Dtarget="$target" --prefix "target/$target"
+              zig build compdb --release=fast -Dtarget="$target"
+              clangd --check=foobar/main.c --log=error
+              ext=""
+              if [[ "$target" == *-windows-* ]]; then ext=".exe"; fi
+              cp "target/$target/bin/foobar$ext" "dist/foobar-$target$ext"
+              echo "::endgroup::"
+            done
+          '
 
-      - name: Prepare release executable
-        if: github.ref_type == 'tag'
-        env:
-          TARGET: ${{ matrix.target }}
-        run: |
-          ext=''
-          if [[ "$TARGET" == *-windows-* ]]; then ext='.exe'; fi
-          cp "target/$TARGET/bin/foobar$ext" "foobar-$TARGET$ext"
-
-      - name: Upload release executable
+      - name: Upload release executables
         if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v7
         with:
-          name: release-${{ matrix.target }}
-          path: foobar-${{ matrix.target }}*
+          name: release-binaries
+          path: dist/foobar-*
           if-no-files-found: error
 
   release:

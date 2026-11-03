@@ -18,6 +18,11 @@ zig build
 ```
 
 ```sh
+zig build --release=fast -Dtarget=aarch64-linux-musl -p target/aarch64-linux-musl
+# -> target/aarch64-linux-musl/bin/foobar
+```
+
+```sh
 zig build compdb
 # -> compile_commands.json
 ```

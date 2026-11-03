@@ -14,7 +14,7 @@
         in
         {
           default = pkgs.mkShell {
-            packages = with pkgs; [ gcc gnumake ];
+            packages = with pkgs; [ gcc gnumake bear ];
             LIBRARY_PATH = "${pkgs.glibc.static}/lib";
             shellHook = ''
               export PS1="(program) $PS1"

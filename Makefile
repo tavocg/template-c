@@ -1,10 +1,11 @@
 PROGRAM = foobar
+EXT ?=
 
 SRC_DIR = src
 BUILD_DIR = build
 MAN_DIR = man
 
-BIN = $(BUILD_DIR)/$(PROGRAM)
+BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
 SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)

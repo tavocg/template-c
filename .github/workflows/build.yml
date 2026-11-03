@@ -2,46 +2,29 @@ name: Build
 
 on:
   push:
+    paths-ignore:
+      - '**.md'
+      - LICENSE
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - LICENSE
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  build:
-    name: ${{ matrix.triple }}
-    runs-on: ${{ matrix.runner }}
+  ubuntu:
+    name: Linux and Windows
+    runs-on: ubuntu-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - runner: ubuntu-latest
-            devshell: default
-            triple: x86_64-unknown-linux-musl
-            ext: ''
-            static: 1
-          - runner: ubuntu-24.04-arm
-            devshell: default
-            triple: aarch64-unknown-linux-musl
-            ext: ''
-            static: 1
-          - runner: macos-latest
-            devshell: default
-            triple: arm64-apple-darwin
-            ext: ''
-          - runner: ubuntu-latest
-            devshell: windows
-            triple: x86_64-w64-mingw32
-            ext: .exe
-            static: 1
-          - runner: ubuntu-latest
-            devshell: windows-arm64
-            triple: aarch64-w64-mingw32
-            ext: .exe
-            static: 1
-
+    env:
+      STATIC: 1
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -53,29 +36,61 @@ jobs:
             experimental-features = nix-command flakes
 
       - name: Build
-        env:
-          STATIC: ${{ matrix.static }}
-        run: nix develop ".#${{ matrix.devshell }}" -c make -j2
+        run: |
+          # eval-cache is disabled because parallel evaluations contend on it.
+          printf '%s\n' default linux-arm64 windows windows-arm64 |
+            xargs -P4 -I{} nix develop ".#{}" --no-update-lock-file \
+              --option eval-cache false -c make -j2
+
+      - name: Prepare release executables
+        if: github.ref_type == 'tag'
+        run: |
+          cp target/x86_64-unknown-linux-musl/foobar foobar-x86_64-unknown-linux-musl
+          cp target/aarch64-unknown-linux-musl/foobar foobar-aarch64-unknown-linux-musl
+          cp target/x86_64-w64-mingw32/foobar.exe foobar-x86_64-w64-mingw32.exe
+          cp target/aarch64-w64-mingw32/foobar.exe foobar-aarch64-w64-mingw32.exe
+
+      - name: Upload release executables
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-linux-windows
+          path: foobar-*
+          if-no-files-found: error
+
+  macos:
+    name: macOS ARM64
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Build
+        run: nix develop .#default --no-update-lock-file -c make -j2
 
       - name: Prepare release executable
         if: github.ref_type == 'tag'
-        env:
-          BINARY: target/${{ matrix.triple }}/foobar${{ matrix.ext }}
-          ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
-        run: cp "$BINARY" "$ASSET"
+        run: cp target/arm64-apple-darwin/foobar foobar-arm64-apple-darwin
 
       - name: Upload release executable
         if: github.ref_type == 'tag'
         uses: actions/upload-artifact@v7
         with:
-          name: release-${{ matrix.triple }}
-          path: foobar-${{ matrix.triple }}${{ matrix.ext }}
+          name: release-macos
+          path: foobar-arm64-apple-darwin
           if-no-files-found: error
 
   release:
     name: Publish release
     if: github.ref_type == 'tag'
-    needs: build
+    needs: [ubuntu, macos]
     runs-on: ubuntu-latest
     permissions:
       contents: write

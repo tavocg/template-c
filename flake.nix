@@ -21,7 +21,7 @@
           platform = pkgs.stdenv.hostPlatform;
         in
         pkgs.mkShell {
-          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config bear ];
+          nativeBuildInputs = with pkgs.buildPackages; [ gnumake ];
           buildInputs = with pkgs; [
             # Add application libraries here, for example SDL2.
           ];
@@ -44,6 +44,8 @@
         } // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
           windows = mkDevShell pkgs.pkgsCross.mingw-ucrt-x86_64;
           windows-arm64 = mkDevShell pkgs.pkgsCross.mingw-ucrt-aarch64;
+        } // pkgs.lib.optionalAttrs pkgs.stdenv.hostPlatform.isx86_64 {
+          linux-arm64 = mkDevShell pkgs.pkgsCross.aarch64-multiplatform-musl;
         });
     };
 }

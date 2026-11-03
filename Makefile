@@ -2,7 +2,7 @@ PROGRAM = foobar
 EXT ?=
 
 SRC_DIR = src
-BUILD_DIR ?= target
+BUILD_DIR ?= target/$(TARGET)
 MAN_DIR = man
 
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
@@ -12,6 +12,10 @@ DEP = $(OBJ:.o=.d)
 MANPAGES = $(wildcard $(MAN_DIR)/man*/*)
 
 include config.mk
+
+ifndef TARGET
+TARGET := $(shell $(CC) -dumpmachine)
+endif
 
 all: $(BIN)
 

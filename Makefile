@@ -17,8 +17,7 @@ all: $(BIN)
 $(BIN): $(OBJ) Makefile config.mk
 	@mkdir -p "$(@D)"
 	@printf '\033[2m%s\033[0m\n' "$@"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) \
-		-Wl,-Bstatic $(STATIC_LIBS) -Wl,-Bdynamic $(DYNAMIC_LIBS) $(LDLIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	@mkdir -p "$(@D)"

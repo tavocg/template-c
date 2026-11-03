@@ -11,10 +11,7 @@ DESTDIR ?=
 
 CC = cc
 
-LDFLAGS ?=
-
-STATIC_LIBS ?=
-DYNAMIC_LIBS ?=
+LDFLAGS ?= -static
 
 LDLIBS ?=
 

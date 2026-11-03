@@ -99,7 +99,7 @@ jobs:
         env:
           BINARY: target/${{ matrix.triple }}/foobar${{ matrix.ext }}
           ASSET: foobar-${{ matrix.triple }}${{ matrix.ext }}
-        run: install -m 755 "$BINARY" "$ASSET"
+        run: cp "$BINARY" "$ASSET"
 
       - name: Upload release executable
         if: github.ref_type == 'tag'
@@ -140,6 +140,7 @@ jobs:
           for asset in dist/*; do
             case "$asset" in
               *-apple-darwin) continue ;;
+              *-linux-*) chmod +x "$asset" ;;
             esac
             upx --best "$asset"
           done

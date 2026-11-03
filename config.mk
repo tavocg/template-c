@@ -7,8 +7,12 @@ DESTDIR ?=
 
 CC = cc
 
-LDFLAGS += \
-					 -static
+LDFLAGS ?=
+
+STATIC_LIBS ?=
+DYNAMIC_LIBS ?=
+
+LDLIBS ?=
 
 CFLAGS += \
 					-std=c99 \

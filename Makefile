@@ -18,12 +18,12 @@ build: all
 
 $(BIN): $(OBJ) Makefile config.mk
 	@mkdir -p "$(@D)"
-	@echo "$@"
+	@printf '\033[2m%s\033[0m\n' "$@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	@mkdir -p "$(@D)"
-	@echo "$@"
+	@printf '\033[2m%s\033[0m\n' "$@"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)

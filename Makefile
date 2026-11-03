@@ -14,8 +14,6 @@ include config.mk
 
 all: $(BIN)
 
-build: all
-
 $(BIN): $(OBJ) Makefile config.mk
 	@mkdir -p "$(@D)"
 	@printf '\033[2m%s\033[0m\n' "$@"
@@ -50,4 +48,4 @@ clean:
 
 -include $(DEP)
 
-.PHONY: all build run clean install uninstall
+.PHONY: all run clean install uninstall

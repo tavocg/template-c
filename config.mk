@@ -9,10 +9,14 @@ PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 DESTDIR ?=
 
-# Respect the compiler supplied by the environment.
 ifneq ($(filter default undefined,$(origin CC)),)
 CC = gcc
 endif
+
+STRIP ?= $(shell $(CC) -print-prog-name=strip)
+STRIPFLAGS ?=
+
+LTOFLAGS ?= -flto
 
 LDFLAGS ?= -static
 
@@ -20,7 +24,7 @@ LDLIBS ?=
 
 CFLAGS += \
 					-std=c89 \
-					-O2 \
+					-O3 \
 					-pedantic-errors \
 					-Werror \
 					-Wall \

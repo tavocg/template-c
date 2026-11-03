@@ -21,11 +21,12 @@ all: $(BIN)
 
 $(BIN): $(OBJ) Makefile config.mk
 	mkdir -p "$(@D)"
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+	$(CC) $(CFLAGS) $(LTOFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+	$(STRIP) $(STRIPFLAGS) $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	mkdir -p "$(@D)"
-	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LTOFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)
 	@./$(BIN)

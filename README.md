@@ -2,7 +2,7 @@
 
 Print a greeting
 
-## Prebuilt binaries
+## Download
 
 Download prebuilt binaries for Linux, macOS, and Windows from the
 [latest release](https://github.com/tavocg/template-c/releases/latest).

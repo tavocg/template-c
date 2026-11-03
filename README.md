@@ -2,6 +2,11 @@
 
 Print a greeting
 
+## Prebuilt binaries
+
+Download prebuilt binaries for Linux, macOS, and Windows from the
+[latest release](https://github.com/tavocg/template-c/releases/latest).
+
 ## Build
 
 Edit `config.mk` to match your setup.
@@ -12,13 +17,8 @@ Requirements:
 - GCC/Clang-compatible C89 compiler.
 
 ```sh
+# Output in target/machine/
 make
-```
-
-## Run
-
-```sh
-make run
 ```
 
 ## Install

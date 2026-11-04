@@ -21,7 +21,7 @@
           platform = pkgs.stdenv.hostPlatform;
         in
         pkgs.mkShell {
-          nativeBuildInputs = with pkgs.buildPackages; [ gnumake ];
+          nativeBuildInputs = with pkgs.buildPackages; [ gnumake pkg-config ];
           buildInputs = with pkgs; [
             # Add application libraries here, for example SDL2.
           ];

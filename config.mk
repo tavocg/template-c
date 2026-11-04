@@ -10,8 +10,6 @@ MANPREFIX ?= $(PREFIX)/share/man
 
 CC ?= gcc
 CPPFLAGS ?= -DVERSION=\"$(VERSION)\" -I.
-CFLAGS ?= -std=c89 -O3 -pedantic-errors -Werror -Wall -Wextra
-LTOFLAGS ?= -flto
 LDFLAGS ?=
 LDLIBS ?=
 STRIPFLAGS ?=
@@ -19,3 +17,4 @@ STRIPFLAGS ?=
 #DESTDIR = /tmp/package
 #TARGET = x86_64-unknown-linux-musl
 #STATIC = 1
+#RELEASE = 1

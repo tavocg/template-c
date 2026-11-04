@@ -4,6 +4,18 @@ endif
 
 include config.mk
 
+ifeq ($(RELEASE),1)
+BUILD_MODE := release
+CFLAGS ?= -std=c89 -O3 -DNDEBUG -pedantic-errors -Werror -Wall -Wextra
+LTOFLAGS ?= -flto
+else
+BUILD_MODE := debug
+CFLAGS ?= -std=c89 -O0 -g3 -pedantic-errors -Werror -Wall -Wextra
+LTOFLAGS ?=
+# Nix's fortify flags require optimization, which debug disables.
+export NIX_HARDENING_ENABLE := $(filter-out fortify fortify3,$(NIX_HARDENING_ENABLE))
+endif
+
 CC_TARGET := $(shell $(CC) -dumpmachine)
 
 ifeq ($(strip $(TARGET)),)
@@ -30,7 +42,7 @@ $(error target $(TARGET) is incompatible with $(CC) ($(CC_TARGET)))
 endif
 endif
 
-BUILD_DIR ?= $(OUT_DIR)/$(TARGET)
+BUILD_DIR ?= $(OUT_DIR)/$(TARGET)/$(BUILD_MODE)
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
 SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
@@ -42,7 +54,9 @@ all: $(BIN)
 $(BIN): $(OBJ) Makefile config.mk
 	mkdir -p "$(@D)"
 	$(CC) $(CFLAGS) $(LTOFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
+ifeq ($(BUILD_MODE),release)
 	$(STRIP) $(STRIPFLAGS) $@
+endif
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 	mkdir -p "$(@D)"

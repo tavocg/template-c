@@ -40,15 +40,15 @@ jobs:
           # eval-cache is disabled because parallel evaluations contend on it.
           printf '%s\n' default linux-arm64 windows windows-arm64 |
             xargs -P4 -I{} nix develop ".#{}" --no-update-lock-file \
-              --option eval-cache false -c make -j2
+              --option eval-cache false -c make -j2 RELEASE=1
 
       - name: Prepare release executables
         if: github.ref_type == 'tag'
         run: |
-          cp target/x86_64-unknown-linux-musl/foobar foobar-x86_64-unknown-linux-musl
-          cp target/aarch64-unknown-linux-musl/foobar foobar-aarch64-unknown-linux-musl
-          cp target/x86_64-w64-mingw32/foobar.exe foobar-x86_64-w64-mingw32.exe
-          cp target/aarch64-w64-mingw32/foobar.exe foobar-aarch64-w64-mingw32.exe
+          cp target/x86_64-unknown-linux-musl/release/foobar foobar-x86_64-unknown-linux-musl
+          cp target/aarch64-unknown-linux-musl/release/foobar foobar-aarch64-unknown-linux-musl
+          cp target/x86_64-w64-mingw32/release/foobar.exe foobar-x86_64-w64-mingw32.exe
+          cp target/aarch64-w64-mingw32/release/foobar.exe foobar-aarch64-w64-mingw32.exe
 
       - name: Upload release executables
         if: github.ref_type == 'tag'
@@ -73,11 +73,11 @@ jobs:
             experimental-features = nix-command flakes
 
       - name: Build
-        run: nix develop .#default --no-update-lock-file -c make -j2
+        run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=1
 
       - name: Prepare release executable
         if: github.ref_type == 'tag'
-        run: cp target/arm64-apple-darwin/foobar foobar-arm64-apple-darwin
+        run: cp target/arm64-apple-darwin/release/foobar foobar-arm64-apple-darwin
 
       - name: Upload release executable
         if: github.ref_type == 'tag'

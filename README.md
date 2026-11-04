@@ -10,9 +10,6 @@ foobar alpha --message="Hello!"
 foobar --silent alpha -m "Hello!"
 ```
 
-`-s`/`--silent` is global and precedes the command. `-m`/`--message` belongs
-to `alpha` and follows the command name.
-
 ## Download
 
 Download prebuilt binaries for Linux, macOS, and Windows from the

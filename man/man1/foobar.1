@@ -9,7 +9,7 @@ foobar \- Print a greeting
 .B foobar
 .RB [ \-s ]
 .B alpha
-.RB [ \-h ]
+.RB [ \-hVs ]
 .RB [ \-m
 .IR MESSAGE ]
 .RB [ \-\-usage ]
@@ -24,10 +24,10 @@ Print help and exit. Also accepted after alpha for subcommand help.
 Print a brief usage message and exit. Also accepted after alpha.
 .TP
 .BR \-V ", " \-\-version
-Print the version and exit. This is a global option, before any command.
+Print the version and exit. Accepted before or after the command.
 .TP
 .BR \-s ", " \-\-silent
-Suppress message output. This is a global option, before the command.
+Suppress message output. Accepted before or after the command.
 .TP
 .BR \-m ", " \-\-message " MESSAGE"
 Set the message. This option belongs to alpha and follows the command name.

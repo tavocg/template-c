@@ -1,8 +1,34 @@
-PROGRAM = foobar
+ifeq ($(origin CC),default)
+undefine CC
+endif
 
-SRC_DIR = foobar
-OUT_DIR = target
-MAN_DIR = man
+include config.mk
+
+CC_TARGET := $(shell $(CC) -dumpmachine)
+
+ifeq ($(strip $(TARGET)),)
+TARGET := $(CC_TARGET)
+endif
+
+ifneq ($(findstring windows,$(TARGET))$(findstring mingw,$(TARGET))$(findstring cygwin,$(TARGET)),)
+ifeq ($(strip $(EXT)),)
+EXT := .exe
+endif
+endif
+
+ifdef STATIC
+override LDFLAGS += -static
+endif
+
+ifeq ($(strip $(STRIP)),)
+STRIP := $(shell $(CC) -print-prog-name=strip)
+endif
+
+ifneq ($(findstring musl,$(TARGET))$(findstring gnu,$(TARGET)),)
+ifneq ($(findstring musl,$(TARGET)),$(findstring musl,$(CC_TARGET)))
+$(error target $(TARGET) is incompatible with $(CC) ($(CC_TARGET)))
+endif
+endif
 
 BUILD_DIR ?= $(OUT_DIR)/$(TARGET)
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
@@ -10,18 +36,6 @@ SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 MANPAGES = $(wildcard $(MAN_DIR)/man*/*)
-
-ifneq ($(filter default undefined,$(origin CC)),)
-CC = gcc
-endif
-
-CC_TARGET := $(shell $(CC) -dumpmachine)
-
-ifndef TARGET
-TARGET := $(CC_TARGET)
-endif
-
-include config.mk
 
 all: $(BIN)
 

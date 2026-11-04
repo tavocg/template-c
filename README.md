@@ -9,7 +9,7 @@ Download prebuilt binaries for Linux, macOS, and Windows from the
 
 ## Build
 
-Edit `config.mk` to match your setup.
+Edit `config.mk` to match your setup, or override with make `NAME=value`.
 
 Requirements:
 

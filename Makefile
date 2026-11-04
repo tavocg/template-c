@@ -15,11 +15,11 @@ endif
 
 ifeq ($(RELEASE),1)
 BUILD_MODE := release
-CFLAGS ?= -std=$(CSTD) -O3 -DNDEBUG -pedantic-errors -Werror -Wall -Wextra
+CFLAGS ?= -std=$(CSTD) -O3 -DNDEBUG -Werror -Wall -Wextra
 LTOFLAGS ?= -flto
 else
 BUILD_MODE := debug
-CFLAGS ?= -std=$(CSTD) -O0 -g3 -pedantic-errors -Werror -Wall -Wextra
+CFLAGS ?= -std=$(CSTD) -O0 -g3 -Werror -Wall -Wextra
 LTOFLAGS ?=
 # Nix's fortify flags require optimization, which debug disables.
 export NIX_HARDENING_ENABLE := $(filter-out fortify fortify3,$(NIX_HARDENING_ENABLE))
@@ -42,7 +42,7 @@ override LDFLAGS += -static
 endif
 
 ifeq ($(strip $(STRIP)),)
-STRIP := $(shell $(CC) -print-prog-name=strip)
+STRIP := $(shell tool=$$($(CC) -print-prog-name=strip 2>/dev/null) && printf '%s' "$$tool")
 endif
 
 ifneq ($(findstring musl,$(TARGET))$(findstring gnu,$(TARGET)),)
@@ -74,7 +74,9 @@ $(BIN): $(OBJ) Makefile config.mk $(BUILD_CONFIG)
 	@mkdir -p "$(@D)"
 	$(CC) $(CFLAGS) $(LTOFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 ifeq ($(BUILD_MODE),release)
+ifneq ($(strip $(STRIP)),)
 	$(STRIP) $(STRIPFLAGS) $@
+endif
 endif
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk $(BUILD_CONFIG)

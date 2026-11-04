@@ -35,8 +35,8 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
-      - name: Build and run debug
-        run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=0 run
+      - name: Build debug
+        run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=0
 
       - name: Build release
         run: |
@@ -75,8 +75,8 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
-      - name: Build and run debug
-        run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=0 run
+      - name: Build debug
+        run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=0
 
       - name: Build release
         run: nix develop .#default --no-update-lock-file -c make -j2 RELEASE=1

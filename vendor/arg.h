@@ -27,6 +27,7 @@ ARG_LONG_func(char **argv0, char const *name)
 		char *arg = argv[0]; \
 		if (arg[1] == '-' && arg[2] == 0 && (--argc, ++argv, 1)) \
 			break; \
+		goto ARG_BEGIN_REP; \
 		ARG_BEGIN_REP: \
 		switch ((++arg)[0]) { \
 		case '-': \
@@ -47,7 +48,7 @@ ARG_LONG_func(char **argv0, char const *name)
 #define ARG_H_INCLUDED
 #endif
 
-/* Local changes: a lone "-" remains an operand; unused values are explicit. */
+/* Local changes: preserve "-", discard unused values, allow value-only parsers. */
 
 /*
  * Copyright (c) 2021 Olaf Berstein

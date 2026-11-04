@@ -2,6 +2,14 @@
 
 Print a greeting.
 
+## Usage
+
+```sh
+foobar alpha -m "Hello!"
+foobar alpha --message="Hello!"
+foobar alpha -s -m "Hello!"
+```
+
 ## Download
 
 Download prebuilt binaries for Linux, macOS, and Windows from the

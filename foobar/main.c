@@ -16,11 +16,15 @@
  * foobar. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <foobar/alpha/alpha.h>
-#include <stdio.h>
+#include <foobar/arg.h>
 
-int main(void) {
-	alpha();
-	puts("Hello, world!");
-	return 0;
+int main(int argc, char* argv[]) {
+	struct args args;
+
+	if (arg_parse(argc, argv, &args) != 0) {
+		usage(stderr, &args);
+		return 1;
+	}
+
+	return arg_run(&args);
 }

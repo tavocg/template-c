@@ -13,9 +13,10 @@ struct parsed {
 static int parse(int argc, char* argv[], struct parsed* result) {
 	result->flags = 0;
 	result->output = NULL;
-	/* clang-format off */
+
 	ARG_BEGIN {
-		if (ARG_LONG("output")) case 'o': {
+		if (ARG_LONG("output")) {
+		case 'o':
 			result->output = ARG_VAL();
 			if (result->output == NULL) {
 				return 1;
@@ -23,11 +24,13 @@ static int parse(int argc, char* argv[], struct parsed* result) {
 			break;
 		} else if (strchr(argv[0], '=') != NULL) {
 			return 1;
-		} else if (ARG_LONG("alpha")) case 'a': {
+		} else if (ARG_LONG("alpha")) {
+		case 'a':
 			result->flags |= 1;
 			ARG_FLAG();
 			break;
-		} else if (ARG_LONG("beta")) case 'b': {
+		} else if (ARG_LONG("beta")) {
+		case 'b':
 			result->flags |= 2;
 			ARG_FLAG();
 			break;
@@ -36,8 +39,9 @@ static int parse(int argc, char* argv[], struct parsed* result) {
 		default:
 			return 1;
 		}
-	} ARG_END;
-	/* clang-format on */
+	}
+	ARG_END;
+
 	result->argc = argc;
 	result->argv = argv;
 	return 0;

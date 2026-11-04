@@ -2,6 +2,18 @@
 .SH NAME
 foobar \- Print a greeting
 .SH SYNOPSIS
-.B foobar
+.B foobar alpha
+.RB [ \-s ]
+.RB [ \-m
+.IR MESSAGE ]
 .SH DESCRIPTION
-Prints "Hello, world!" followed by a newline to standard output.
+The alpha subcommand prints MESSAGE followed by a newline when provided.
+.SH OPTIONS
+.TP
+.BR \-s ", " \-\-silent
+Suppress message output.
+.TP
+.BR \-m ", " \-\-message " MESSAGE"
+Set the message.
+.SH EXIT STATUS
+0 on success; 1 for invalid arguments or an output error.

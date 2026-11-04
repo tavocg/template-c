@@ -10,6 +10,8 @@
 #ifndef ALPHA_H
 #define ALPHA_H
 
-void alpha(void);
+struct args;
+
+int alpha(const struct args* args);
 
 #endif /* ALPHA_H */

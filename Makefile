@@ -57,7 +57,7 @@ uninstall:
 	done
 
 clean:
-	rm -f $(BIN) $(OBJ) $(DEP)
+	rm -rf "$(OUT_DIR)"
 
 -include $(DEP)
 

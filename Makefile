@@ -4,13 +4,19 @@ endif
 
 include config.mk
 
+ifneq ($(strip $(PACKAGES)),)
+PACKAGE_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(PACKAGES))
+override CPPFLAGS := $(CPPFLAGS) $(patsubst -I%,-isystem %,$(PACKAGE_CFLAGS))
+override LDLIBS := $(LDLIBS) $(shell $(PKG_CONFIG) $(if $(STATIC),--static) --libs $(PACKAGES))
+endif
+
 ifeq ($(RELEASE),1)
 BUILD_MODE := release
-CFLAGS ?= -std=c89 -O3 -DNDEBUG -pedantic-errors -Werror -Wall -Wextra
+CFLAGS ?= -std=$(CSTD) -O3 -DNDEBUG -pedantic-errors -Werror -Wall -Wextra
 LTOFLAGS ?= -flto
 else
 BUILD_MODE := debug
-CFLAGS ?= -std=c89 -O0 -g3 -pedantic-errors -Werror -Wall -Wextra
+CFLAGS ?= -std=$(CSTD) -O0 -g3 -pedantic-errors -Werror -Wall -Wextra
 LTOFLAGS ?=
 # Nix's fortify flags require optimization, which debug disables.
 export NIX_HARDENING_ENABLE := $(filter-out fortify fortify3,$(NIX_HARDENING_ENABLE))

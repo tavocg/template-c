@@ -5,9 +5,12 @@ endif
 include config.mk
 
 ifneq ($(strip $(PACKAGES)),)
-PACKAGE_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(PACKAGES))
+ifeq ($(shell $(PKG_CONFIG) --exists --print-errors "$(PACKAGES)" && printf yes),)
+$(error Cannot resolve PACKAGES ($(PACKAGES)) with $(PKG_CONFIG))
+endif
+PACKAGE_CFLAGS := $(shell $(PKG_CONFIG) --cflags "$(PACKAGES)")
 override CPPFLAGS := $(CPPFLAGS) $(patsubst -I%,-isystem %,$(PACKAGE_CFLAGS))
-override LDLIBS := $(LDLIBS) $(shell $(PKG_CONFIG) $(if $(STATIC),--static) --libs $(PACKAGES))
+override LDLIBS := $(LDLIBS) $(shell $(PKG_CONFIG) $(if $(STATIC),--static) --libs "$(PACKAGES)")
 endif
 
 ifeq ($(RELEASE),1)

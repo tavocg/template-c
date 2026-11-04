@@ -9,7 +9,11 @@ TEST_DIR ?= tests
 PREFIX ?= /usr/local
 MANPREFIX ?= $(PREFIX)/share/man
 
+PKG_CONFIG ?= pkg-config
+PACKAGES ?=
+
 CC ?= gcc
+CSTD ?= c89
 CPPFLAGS ?= -DVERSION=\"$(VERSION)\" -I.
 LDFLAGS ?=
 LDLIBS ?=

@@ -15,10 +15,8 @@ ifneq ($(filter default undefined,$(origin CC)),)
 CC = gcc
 endif
 
-CC_TARGET := $(shell $(CC) -dumpmachine)
-
 ifndef TARGET
-TARGET := $(CC_TARGET)
+TARGET := $(shell $(CC) -dumpmachine)
 endif
 
 include config.mk

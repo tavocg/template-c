@@ -17,9 +17,9 @@ ifdef STATIC
 override LDFLAGS += -static
 endif
 
-ifneq ($(findstring gnu,$(TARGET)),)
-ifneq ($(findstring musl,$(CC_TARGET)),)
-$(error gnu target requested, but $(CC) targets musl)
+ifneq ($(findstring musl,$(TARGET))$(findstring gnu,$(TARGET)),)
+ifneq ($(findstring musl,$(TARGET)),$(findstring musl,$(CC_TARGET)))
+$(error target $(TARGET) is incompatible with $(CC) ($(CC_TARGET)))
 endif
 endif
 

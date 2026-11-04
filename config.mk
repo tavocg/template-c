@@ -1,9 +1,4 @@
-# The VERSION file is the single source of truth.
-VERSION ?= $(shell cat "$(CURDIR)/VERSION" 2>/dev/null)
-
-ifeq ($(strip $(VERSION)),)
-$(error VERSION file is missing or empty)
-endif
+VERSION ?= 0.1.0
 
 CPPFLAGS += -DVERSION=\"$(VERSION)\"
 CPPFLAGS += -I.
@@ -22,7 +17,6 @@ ifdef STATIC
 override LDFLAGS += -static
 endif
 
-# A gnu target needs a gnu toolchain; fail instead of silently linking musl.
 ifneq ($(findstring gnu,$(TARGET)),)
 ifneq ($(findstring musl,$(CC_TARGET)),)
 $(error gnu target requested, but $(CC) targets musl)

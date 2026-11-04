@@ -1,9 +1,10 @@
 PROGRAM = foobar
 
 SRC_DIR = foobar
-BUILD_DIR ?= target/$(TARGET)
+OUT_DIR = target
 MAN_DIR = man
 
+BUILD_DIR ?= $(OUT_DIR)/$(TARGET)
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
 SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
@@ -36,9 +37,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
 run: $(BIN)
 	@./$(BIN)
 
-version:
-	@printf '%s\n' "$(VERSION)"
-
 compile_commands.json:
 	bear -- $(MAKE) -B all
 
@@ -63,4 +61,4 @@ clean:
 
 -include $(DEP)
 
-.PHONY: all run version compile_commands.json clean install uninstall
+.PHONY: all run compile_commands.json clean install uninstall

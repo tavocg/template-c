@@ -10,4 +10,5 @@
 #include <foobar/alpha/alpha.h>
 
 void alpha(void) {
+	return;
 }

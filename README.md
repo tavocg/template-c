@@ -13,6 +13,7 @@ Edit `config.mk` to match your setup, or override with make `NAME=value`.
 
 Requirements:
 
+- `pkg-config`
 - GNU Make.
 - GCC/Clang-compatible C89 compiler.
 

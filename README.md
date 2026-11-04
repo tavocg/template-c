@@ -15,7 +15,7 @@ Requirements:
 
 - `pkg-config`
 - GNU Make.
-- GCC/Clang/tcc-compatible C89 compiler.
+- C89 compiler.
 - (Optional) `bear` to generate `compile_commands.json`
 
 ```sh

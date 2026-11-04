@@ -44,7 +44,7 @@ endif
 
 BUILD_DIR ?= $(OUT_DIR)/$(TARGET)/$(BUILD_MODE)
 BIN = $(BUILD_DIR)/$(PROGRAM)$(EXT)
-SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
+SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' ! -name '*_test.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 MANPAGES = $(wildcard $(MAN_DIR)/man*/*)
@@ -98,6 +98,8 @@ clean:
 	rm -rf "$(OUT_DIR)"
 
 -include $(DEP)
+
+include tests.mk
 
 config:
 

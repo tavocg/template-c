@@ -6,6 +6,8 @@
 
 struct args;
 
+enum arg_action { ARG_EXECUTE, ARG_USAGE, ARG_VERSION, ARG_HELP };
+
 struct command {
 	const char* name;
 	int (*run)(const struct args*);
@@ -16,6 +18,7 @@ struct args {
 	const struct command* command;
 	const char*           message;
 	int                   silent;
+	enum arg_action       action;
 };
 
 void synopsis(FILE* stream, const struct args* args);

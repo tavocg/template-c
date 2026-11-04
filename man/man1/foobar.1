@@ -2,13 +2,27 @@
 .SH NAME
 foobar \- Print a greeting
 .SH SYNOPSIS
+.B foobar
+.RB [ \-hV ]
+.RB [ \-\-usage ]
+.PP
 .B foobar alpha
-.RB [ \-s ]
+.RB [ \-hs ]
 .RB [ \-m
 .IR MESSAGE ]
+.RB [ \-\-usage ]
 .SH DESCRIPTION
 The alpha subcommand prints MESSAGE followed by a newline when provided.
 .SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Print help and exit. Also accepted after alpha for subcommand help.
+.TP
+.B \-\-usage
+Print a brief usage message and exit. Also accepted after alpha.
+.TP
+.BR \-V ", " \-\-version
+Print the version and exit. This is a global option, before any command.
 .TP
 .BR \-s ", " \-\-silent
 Suppress message output.

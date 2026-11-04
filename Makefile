@@ -71,14 +71,14 @@ $(BUILD_CONFIG): config
 	fi
 
 $(BIN): $(OBJ) Makefile config.mk $(BUILD_CONFIG)
-	mkdir -p "$(@D)"
+	@mkdir -p "$(@D)"
 	$(CC) $(CFLAGS) $(LTOFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 ifeq ($(BUILD_MODE),release)
 	$(STRIP) $(STRIPFLAGS) $@
 endif
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk $(BUILD_CONFIG)
-	mkdir -p "$(@D)"
+	@mkdir -p "$(@D)"
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LTOFLAGS) -MMD -MP -c $< -o $@
 
 run: $(BIN)

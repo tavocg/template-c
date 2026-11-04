@@ -8,6 +8,9 @@ Print a greeting.
 foobar alpha -m "Hello!"
 foobar alpha --message="Hello!"
 foobar alpha -s -m "Hello!"
+foobar --help
+foobar --version
+foobar alpha --usage
 ```
 
 ## Download

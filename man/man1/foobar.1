@@ -3,11 +3,13 @@
 foobar \- Print a greeting
 .SH SYNOPSIS
 .B foobar
-.RB [ \-hV ]
+.RB [ \-hVs ]
 .RB [ \-\-usage ]
 .PP
-.B foobar alpha
-.RB [ \-hs ]
+.B foobar
+.RB [ \-s ]
+.B alpha
+.RB [ \-h ]
 .RB [ \-m
 .IR MESSAGE ]
 .RB [ \-\-usage ]
@@ -25,9 +27,9 @@ Print a brief usage message and exit. Also accepted after alpha.
 Print the version and exit. This is a global option, before any command.
 .TP
 .BR \-s ", " \-\-silent
-Suppress message output.
+Suppress message output. This is a global option, before the command.
 .TP
 .BR \-m ", " \-\-message " MESSAGE"
-Set the message.
+Set the message. This option belongs to alpha and follows the command name.
 .SH EXIT STATUS
 0 on success; 1 for invalid arguments or an output error.

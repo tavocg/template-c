@@ -10,13 +10,13 @@ void synopsis(FILE* stream, const struct args* args) {
 	if (args->command != NULL) {
 		fprintf(
 		    stream,
-		    "usage: %s alpha [-hs] [-m MESSAGE] [--usage]\n",
+		    "usage: %s [-s] alpha [-h] [-m MESSAGE] [--usage]\n",
 		    args->program
 		);
 	} else {
 		fprintf(
 		    stream,
-		    "usage: %s [-hV] [--usage] command [options]\n",
+		    "usage: %s [-hVs] [--usage] command [options]\n",
 		    args->program
 		);
 	}
@@ -25,15 +25,13 @@ void synopsis(FILE* stream, const struct args* args) {
 void usage(FILE* stream, const struct args* args) {
 	synopsis(stream, args);
 	if (args->command != NULL) {
-		fputs(
-		    "  -m, --message MESSAGE  Print MESSAGE.\n"
-		    "  -s, --silent           Suppress message output.\n",
-		    stream
-		);
+		fputs("  -m, --message MESSAGE  Print MESSAGE.\n", stream);
 	} else {
 		fputs(
 		    "Commands:\n  alpha  Print a message.\n"
-		    "Options:\n  -V, --version  Show the version and exit.\n",
+		    "Global options:\n"
+		    "  -s, --silent   Suppress message output.\n"
+		    "  -V, --version  Show the version and exit.\n",
 		    stream
 		);
 	}
@@ -55,11 +53,6 @@ static int parse_command(int argc, char* argv[], struct args* args) {
 			break;
 		} else if (strchr(argv[0], '=') != NULL) {
 			return 1;
-		} else if (ARG_LONG("silent")) {
-		case 's':
-			args->silent = 1;
-			ARG_FLAG();
-			break;
 		} else if (ARG_LONG("help")) {
 		case 'h':
 			args->action = ARG_HELP;
@@ -89,6 +82,11 @@ int arg_parse(int argc, char* argv[], struct args* args) {
 	ARG_BEGIN {
 		if (strchr(argv[0], '=') != NULL) {
 			return 1;
+		} else if (ARG_LONG("silent")) {
+		case 's':
+			args->silent = 1;
+			ARG_FLAG();
+			break;
 		} else if (ARG_LONG("help")) {
 		case 'h':
 			args->action = ARG_HELP;

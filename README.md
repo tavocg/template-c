@@ -7,7 +7,11 @@ Print a greeting.
 ```sh
 foobar --help
 foobar alpha --message="Hello!"
+foobar --silent alpha -m "Hello!"
 ```
+
+`-s`/`--silent` is global and precedes the command. `-m`/`--message` belongs
+to `alpha` and follows the command name.
 
 ## Download
 

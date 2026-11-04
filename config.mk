@@ -13,7 +13,7 @@ CPPFLAGS ?= -DVERSION=\"$(VERSION)\" -I.
 CFLAGS ?= -std=c89 -O3 -pedantic-errors -Werror -Wall -Wextra
 LTOFLAGS ?= -flto
 LDFLAGS ?=
-LDLIBS ?= -lm
+LDLIBS ?=
 STRIPFLAGS ?=
 
 #DESTDIR = /tmp/package

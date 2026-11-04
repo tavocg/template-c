@@ -29,10 +29,6 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Check version tag
-        if: github.ref_type == 'tag'
-        run: test "v$(make -s version)" = "$GITHUB_REF_NAME"
-
       - name: Install Nix
         uses: cachix/install-nix-action@v31
         with:

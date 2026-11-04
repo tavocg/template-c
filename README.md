@@ -21,7 +21,7 @@ make
 # -> target/<triple>/foobar
 
 make TARGET=x86_64-w64-mingw32 CC=x86_64-w64-mingw32-gcc
-# -> target/x86_64-w64-mingw32/foobar
+# -> target/x86_64-w64-mingw32/foobar.exe
 ```
 
 ## Install

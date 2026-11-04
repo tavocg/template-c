@@ -48,17 +48,27 @@ SRC := $(shell find "$(SRC_DIR)" -type f -name '*.c' | sort)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 MANPAGES = $(wildcard $(MAN_DIR)/man*/*)
+BUILD_CONFIG = $(BUILD_DIR)/.build-config
+CONFIG_VARS = CC CC_TARGET TARGET BUILD_MODE CPPFLAGS CFLAGS LTOFLAGS LDFLAGS LDLIBS STRIP STRIPFLAGS NIX_HARDENING_ENABLE
+shell_quote = '$(subst ','"'"',$(1))'
 
 all: $(BIN)
 
-$(BIN): $(OBJ) Makefile config.mk
+$(BUILD_CONFIG): config
+	@mkdir -p "$(@D)"
+	@config=$$(printf '%s\n' $(foreach var,$(CONFIG_VARS),$(call shell_quote,$(var)=$($(var))))); \
+	if [ "$$config" != "$$(cat "$@" 2>/dev/null)" ]; then \
+		printf '%s\n' "$$config" > "$@"; \
+	fi
+
+$(BIN): $(OBJ) Makefile config.mk $(BUILD_CONFIG)
 	mkdir -p "$(@D)"
 	$(CC) $(CFLAGS) $(LTOFLAGS) $(LDFLAGS) -o $@ $(OBJ) $(LDLIBS)
 ifeq ($(BUILD_MODE),release)
 	$(STRIP) $(STRIPFLAGS) $@
 endif
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c Makefile config.mk $(BUILD_CONFIG)
 	mkdir -p "$(@D)"
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LTOFLAGS) -MMD -MP -c $< -o $@
 
@@ -89,4 +99,6 @@ clean:
 
 -include $(DEP)
 
-.PHONY: all run compile_commands.json clean install uninstall
+config:
+
+.PHONY: all run compile_commands.json clean install uninstall config

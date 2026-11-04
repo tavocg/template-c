@@ -14,5 +14,6 @@ int alpha(const struct args* args) {
 	if (!args->silent && args->message != NULL && puts(args->message) == EOF) {
 		return 1;
 	}
+
 	return 0;
 }

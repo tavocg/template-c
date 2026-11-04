@@ -54,6 +54,7 @@ static int parse_global_option(
 	    {"version", 'V', ARG_VERSION},
 	    {"usage", '\0', ARG_USAGE}
 	};
+
 	size_t i;
 
 	for (i = 0; i < sizeof(options) / sizeof(options[0]); i++) {
@@ -67,6 +68,7 @@ static int parse_global_option(
 			return 1;
 		}
 	}
+
 	return 0;
 }
 
@@ -90,6 +92,7 @@ static int parse_command(int argc, char* argv[], struct args* args) {
 		}
 	}
 	ARG_END;
+
 	return argc > 0 && args->action == ARG_EXECUTE;
 }
 
@@ -99,6 +102,7 @@ int arg_parse(int argc, char* argv[], struct args* args) {
 
 	*args = defaults;
 	args->program = argc > 0 && argv[0] != NULL ? argv[0] : "foobar";
+
 	ARG_BEGIN {
 		/* fall through */
 	default:
@@ -109,15 +113,18 @@ int arg_parse(int argc, char* argv[], struct args* args) {
 		break;
 	}
 	ARG_END;
+
 	if (args->action != ARG_EXECUTE) {
 		return 0;
 	}
+
 	for (i = 0; argc > 0 && i < sizeof(commands) / sizeof(commands[0]); i++) {
 		if (strcmp(argv[0], commands[i].name) == 0) {
 			args->command = &commands[i];
 			return parse_command(argc, argv, args);
 		}
 	}
+
 	return 1;
 }
 
